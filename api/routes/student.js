@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const mysql = require('promise-mysql');
+const checkStudentAuth = require("../auth/studentAuth");
 
 var bodyParser = require('body-parser');
 var jsonParser = bodyParser.json();
