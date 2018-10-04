@@ -9,8 +9,8 @@ module.exports = (req,res,next)=>{
         {
             req.userData = decoded;
 			const data = jwt.decode(req.headers.authentication);
-			req.studentYN = data.student;
-			console.log(data.student);
+			req.adminYN = data.admin;
+			console.log(data.admin);
 			next();
         }
     }catch(error){

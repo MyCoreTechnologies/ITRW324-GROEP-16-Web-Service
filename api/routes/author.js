@@ -13,22 +13,24 @@ var pool = mysql.createPool({
 });
 
 router.post('/addAuthor', jsonParser, (req, res, next) => {
-    var sql = 'INSERT INTO author set ?';
+    if(req.adminYN === 1){
+        var sql = 'INSERT INTO author set ?';
 
-    var author = {
-        Author_Name:   req.body.author_name
-    };
+        var author = {
+            Author_Name:   req.body.author_name
+        };
 
-    pool.getConnection().then((connection) => {
-        connection.query(sql, author, (err, result, fields) => {
-            if (err){
-                res.status(400);
-            }
-            if (result){
-                res.status(200).json({message:'Author added'});
-            }
+        pool.getConnection().then((connection) => {
+            connection.query(sql, author, (err, result, fields) => {
+                if (err){
+                    res.status(400);
+                }
+                if (result){
+                    res.status(200).json({message:'Author added'});
+                }
+            });
         });
-    });
+    }
 });
 
 module.exports = router;
