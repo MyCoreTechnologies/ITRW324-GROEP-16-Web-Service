@@ -1,3 +1,8 @@
+//Book table/route needs the following:
+//Admin can create, read, update and delete
+//Student can create, read, update and delete
+
+//Constant variables for all used api's and directories
 const express = require('express');
 const router = express.Router();
 const mysql = require('promise-mysql');
@@ -182,7 +187,7 @@ catch(error)
 //Methods for viewing all book data
 try{
     router.get('/viewbooks', jsonParser, (req, res) => {
-        var viewBookSQL = 'SELECT * FROM book_detail'
+        var viewBookSQL = 'SELECT Name, Edition, "Author Name", "Subject Code", Price, "ISBN 10", "ISBN 13", Type, "Student Name", "Student Contact Number", "Student Email Address" FROM book_detail'
 
         pool.getConnection().then((connection) => {
             connection.query(viewBookSQL, (err, result) => {
@@ -202,18 +207,108 @@ catch(error)
     res.status(404).json({error:'An error occured when we tried to add your book.'});
 }
 
+//Methods to view all advertisements
 try{
-    router.post('/mybooks', jsonParser, (req, res) => {
-        var viewBookSQL = 'SELECT * FROM book_detail where STUDENT_Student_Number = ?'
+    router.post('/advertisements', jsonParser, (req, res) => {
+        var viewBookSQL = 'SELECT Name, Edition, "Author Name", "Subject Code", Price, "ISBN 10", "ISBN 13", Type, "Student Name", "Student Contact Number", "Student Email Address" FROM book_detail where type = ?'
 
         pool.getConnection().then((connection) => {
-            connection.query(viewBookSQL, req.body.student_number, (err, result) => {
+            connection.query(viewBookSQL, req.body.type, (err, result) => {
                 if (err){
-                    res.status(400).json({message:'Data could not be found.'});
+                    res.status(400).json({message:'Data could not be found for advertisements.'});
                 }
                 if (result){
                     console.log('Data being collected.');
                     res.status(200).json(result);
+                }
+            });
+        });
+    });
+}
+catch(error)
+{
+    res.status(404).json({error:'An error occured when we tried to add your book.'});
+}
+
+//Methods to view all requests
+try{
+    router.post('/requests', jsonParser, (req, res) => {
+        var viewBookSQL = 'SELECT Name, Edition, "Author Name", "Subject Code", Price, "ISBN 10", "ISBN 13", Type, "Student Name", "Student Contact Number", "Student Email Address" FROM book_detail where type = ?'
+
+        pool.getConnection().then((connection) => {
+            connection.query(viewBookSQL, req.body.type, (err, result) => {
+                if (err){
+                    res.status(400).json({message:'Data could not be found for requests.'});
+                }
+                if (result){
+                    console.log('Data being collected.');
+                    res.status(200).json(result);
+                }
+            });
+        });
+    });
+}
+catch(error)
+{
+    res.status(404).json({error:'An error occured when we tried to add your book.'});
+}
+
+//Methods to view all personally placed books
+try{
+    router.post('/mybooks', jsonParser, (req, res) => {
+        var viewBookSQL = 'SELECT book.Book_Number, book.Book_Name, book.Book_Edition, book.Book_ISBN_10_Number, book.Book_ISBN_13_Number, book.Book_Price, book.Book_Type, book.Date_Placed, author.Author_Name,subject.Subject_Code FROM book, book_author, book_subject, author, subject where book.Book_Number = book_author.BOOK_Book_Number and book.Book_Number = book_subject.BOOK_Book_Number and book_author.AUTHOR_Author_Number = author.Author_Number and book_subject.SUBJECT_Subject_Number = subject.Subject_Number and book.STUDENT_Student_Number = ?'
+
+        pool.getConnection().then((connection) => {
+            connection.query(viewBookSQL, req.body.student_number, (err, result) => {
+                if (err){
+                    res.status(400).json({message:'Data could not be found personal books placed.'});
+                }
+                if (result){
+                    console.log('Data being collected.');
+                    res.status(200).json(result);
+                }
+            });
+        });
+    });
+}
+catch(error)
+{
+    res.status(404).json({error:'An error occured when we tried to add your book.'});
+}
+
+//Methods to delete a book from /mybooks
+try{
+    router.post('/mybooks/delete', jsonParser, (req, res) => {
+        var dbookauthor = 'DELETE FROM book_author where book_book_number = ?';
+        var dbooksubject = 'DELETE FROM book_subject where book_book_number = ?';
+        var dbook = 'DELETE FROM book where book_number = ?';
+
+        var bookNumber = req.body.book_number;
+
+        pool.getConnection().then((connection) => {
+            connection.query(dbookauthor, bookNumber, (err, result) => {
+                if (err){
+                    res.status(400).json({message:'Data could not be deleted.'});
+                }
+                if (result){
+                    console.log('Data was deleted.');
+                }
+            });
+            connection.query(dbooksubject, bookNumber, (err, result) => {
+                if (err){
+                    res.status(400).json({message:'Data could not be deleted.'});
+                }
+                if (result){
+                    console.log('Data was deleted.');
+                }
+            });
+            connection.query(dbook, bookNumber, (err, result) => {
+                if (err){
+                    res.status(400).json({message:'Book could not be deleted.'});
+                }
+                if (result){
+                    console.log('Book was deleted.');
+                    res.status(200).json({message:'Book was deleted.'});
                 }
             });
         });

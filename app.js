@@ -4,6 +4,7 @@ const express = require('express');
 const app = express();
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
+const bcrypt = require('bcryptjs');
 
 //local packages/branches
 app.use(morgan('dev'));
