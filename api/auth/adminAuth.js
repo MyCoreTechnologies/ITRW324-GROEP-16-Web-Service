@@ -12,12 +12,12 @@ module.exports = (req,res,next)=>{
 			if(data.admin === 1){
                 next();
             } else {
-                return res.status(401).json({message:'Authorization failed'});
+                return res.status(401).json({message:'You are not authorized to do this.'});
             }
 			
         }
     }catch(error){
-        console.lof('Failure in adminAuth.js')
+        console.log('Failure in adminAuth.js')
         return res.status(401).json({message:'Authorization failed'});
     }
 };

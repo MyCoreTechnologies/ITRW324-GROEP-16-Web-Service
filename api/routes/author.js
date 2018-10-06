@@ -1,3 +1,4 @@
+//URL:  http://localhost:3000/author
 //Author table/route needs the following:
 //Admin can create, read, update and delete
 
@@ -18,10 +19,11 @@ var pool = mysql.createPool({
 });
 
 //Create Author
+//URL:  http://localhost:3000/author/addAuthor
 //Requested data: Administrator key in header
 //                author_name
 try{
-    router.post('/addAuthor', adminAuth, jsonParser, (req, res) => {
+    router.post('/addAuthor', adminAuth, jsonParser, (req, res, next) => {
         //Creating SQL variables for create author
         var iAuthor = 'INSERT INTO author set ?';
         
@@ -45,13 +47,14 @@ try{
         });
     });
 }catch (error){
-    res.status(500).json({message:'Error caught at Create Author in api/routes/Author.js line 24-46.'});
+    res.status(500).json({message:'Error caught at Create Author in api/routes/author.js.'});
 }
 
 //Read Author
+//URL:  http://localhost:3000/author/getAuthor
 //Requested data: Administrator key in header
 try{
-    router.get('/getAuthor', adminAuth, jsonParser, (res) => {
+    router.get('/getAuthor', adminAuth, jsonParser, (req, res, next) => {
         //Creating the SQL variables to read author table
         var rAuthor = 'SELECT * FROM author';
         //Getting a connection to the MySQL Database
@@ -69,10 +72,11 @@ try{
         });
     });
 }catch (error){
-    res.status(500).json({message:'Error caught at Read Author in api/routes/Author.js line 54-70.'});
+    res.status(500).json({message:'Error caught at Read Author in api/routes/author.js.'});
 }
 
 //Update Author
+//URL:  http://localhost:3000/author/updateAuthor
 //Requested Data: Administrator key in header
 //                o_author_name ----Original author name to be updated
 //                n_author_name ----New author name
@@ -108,10 +112,11 @@ try{
         })
     });
 }catch (error){
-    res.status(500).json({message:'Error caught at Update Author in api/routes/Author.js line 80-109.'});
+    res.status(500).json({message:'Error caught at Update Author in api/routes/author.js.'});
 }
 
-//Delete Author 
+//Delete Author
+//URL:  http://localhost:3000/author/deleteAuthor
 //NOTE:Admins can only remove Authors not Attached to any books.
 //Requested data:  Administrator key in header
 //                 author_name
@@ -147,7 +152,7 @@ try{
         })
     });
 }catch (error){
-    res.status(500).json({message:'Error caught at Delete Author in api/routes/Author.js line 119-148.'});
+    res.status(500).json({message:'Error caught at Delete Author in api/routes/author.js.'});
 }
 
 //Exporting all the different routes to app.js
