@@ -19,6 +19,7 @@ const studentRoute = require('./api/routes/student.js');
 const subjectRoute = require('./api/routes/subject.js');
 
 app.use(bodyParser.urlencoded({extended: false}));
+
 app.use(bodyParser.json());
 
 app.use((req, res, next) => {
