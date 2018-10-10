@@ -43,7 +43,6 @@ var transporter = nodemailer.createTransport({
 //                date_placed
 //                author_name
 //                subject_code
-//                faculty_name
 try{
     router.post('/addBook', checkAuth, jsonParser, (req, res, next) => {
         //Creating SQL variables for the create book
@@ -54,10 +53,8 @@ try{
         var fbook = 'SELECT * FROM book WHERE Book_Name = ? AND Book_Edition = ? AND Book_ISBN_10_Number = ? AND Book_ISBN_13_Number = ? AND Book_Price = ? AND Book_Type = ? AND Date_Placed = ? AND STUDENT_Student_Number = ?';
         var fauthor = 'SELECT * FROM author WHERE Author_Name = ?';
         var fsubject = 'SELECT * FROM subject WHERE Subject_Code = ?';
-        var ffaculty = 'SELECT * FROM faculty WHERE Faculty_Name = ?';
         var fbookauthor = 'SELECT * FROM book_author WHERE BOOK_Book_Number = ? AND AUTHOR_Author_Number = ?';
         var fbooksubject = 'SELECT * FROM book_subject WHERE BOOK_Book_Number = ? AND SUBJECT_Subject_Number = ?';
-        var ffaculty = 'SELECT * FROM faculty WHERE Faculty_Name = ?';
         var fStudent = 'SELECT * FROM student WHERE Student_Number = ?';
 
         //Creating variables for not requested data
@@ -115,21 +112,7 @@ try{
                 book_number = booksRow[0].Book_Number;
                 console.log('Book read.');
             }
-            //Sending a SQL query to the database and making a PROMISE
-            return connection.query(ffaculty, req.body.faculty_name);
-        })
-        .then(function(facultyRow){
-            //If function to test if the data you want to find exists in the database
-            if(facultyRow.length === 0)
-            {
-                res.status(400).json({message:'Faculty does not exist.'});
-            } else {
-                if(facultyRow[0].Faculty_Name === req.body.faculty_name)
-                {
-                    faculty_number = facultyRow[0].Faculty_Number;
-                    console.log('Faculty read.');
-                }
-            }
+            
             //Sending a SQL query to the database and making a PROMISE
             return connection.query(fsubject, req.body.subject_code);
         })
