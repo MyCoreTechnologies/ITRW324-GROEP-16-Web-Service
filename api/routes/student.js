@@ -54,7 +54,7 @@ try{
             to: req.body.email_address,
             cc: 'gvanwyk0@gmail.com',
             subject: 'Registering for SELIT secondhand textbook store.',
-            text: 'You have just registered. Now you can use the services SELIT provides to students at the North-West University of Potchefstroom.'
+            text: 'You have just registered. Now you can use the services SELIT provides, to the students at the North-West University of Potchefstroom.'
         };
     
         //Creating SQL variables to Create a student
