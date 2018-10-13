@@ -61,7 +61,6 @@ try{
                         var mailOptions = {
                             from: 'selitnotifier@gmail.com',
                             to: resu[0].Email_Address,
-                            cc: 'gvanwyk0@gmail.com',
                             subject: 'SELIT security',
                             text: 'You have just been reported for ' + req.body.reason + '.'
                         };

@@ -1,16 +1,14 @@
 var JWT_Organization = 'mygeheim';
 var jwt = require('jsonwebtoken');
 
-module.exports = (req,res,next)=>{
-    console.log(req.headers);
+module.exports = (req,res,next)=>{   
     try{
-        const decoded = jwt.verify(req.headers.authentication,JWT_Organization);
+        const decoded = jwt.verify(req.headers.authorization,JWT_Organization);
         if(decoded)
         {
             req.userData = decoded;
-			const data = jwt.decode(req.headers.authentication);
+			const data = jwt.decode(req.headers.authorization);
 			req.keystudentNumber = data.student_number;
-			console.log(data.student_number);
 			next();
         }
     }catch(error){

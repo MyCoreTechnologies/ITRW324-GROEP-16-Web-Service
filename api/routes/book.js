@@ -84,7 +84,7 @@ try{
         .then(function(conn) {
             connection = conn;
             //Sending a SQL query to the database and making a PROMISE
-            return connection.query(fbook, [req.body.book_name, req.body.book_edition, req.body.book_isbn_10_number, req.body.book_isbn_13_number, req.body.book_price, req.body.book_type, req.body.date_placed, req.body.student_number]);
+            return connection.query(fbook, [req.body.book_name, req.body.book_edition, req.body.book_isbn_10_number, req.body.book_isbn_13_number, req.body.book_price, req.body.book_type, req.body.date_placed, req.keystudentNumber]);
         })
         .then(function(bookRow){
             //If function to test if the data you want to add exists in the database
@@ -101,7 +101,7 @@ try{
                 });
             }
             //Sending a SQL query to the database and making a PROMISE
-            return connection.query(fbook, [req.body.book_name, req.body.book_edition, req.body.book_isbn_10_number, req.body.book_isbn_13_number, req.body.book_price, req.body.book_type, req.body.date_placed, req.body.student_number]);
+            return connection.query(fbook, [req.body.book_name, req.body.book_edition, req.body.book_isbn_10_number, req.body.book_isbn_13_number, req.body.book_price, req.body.book_type, req.body.date_placed, req.keystudentNumber]);
         })
         .then(function(booksRow){
             //If function to test if the data you want to find exists in the database
@@ -118,7 +118,7 @@ try{
         })
         .then(function(subjectRow){
             //If function to test if the data you want to find exists in the database
-            if(subjectRow.length === 0)
+            if(subjectRow[0].length === 0)
             {
                 res.status(400).json({message:'Subject does not exist.'});
             } else{
@@ -213,7 +213,6 @@ try{
             var mailOptions = {
                 from: 'selitnotifier@gmail.com',
                 to: studentRows[0].Email_Address,
-                cc: 'gvanwyk0@gmail.com',
                 subject: 'SELIT notification',
                 text: 'You have added the following book: ' + req.body.book_name + ' for subject ' + req.body.subject_code + ' at R' + req.body.book_price + '.'
             };
@@ -247,7 +246,7 @@ catch(error)
 try{
     router.get('/getBook', checkAuth, jsonParser, (req, res, next) => {
         //Creating SQL variables for the Read Book
-        var viewBookSQL = 'SELECT Name, Edition, "Author Name", "Subject Code", Price, "ISBN 10", "ISBN 13", Type, "Student Name", "Student Contact Number", "Student Email Address" FROM book_detail'
+        var viewBookSQL = 'SELECT Book_Name, Book_Edition, Author_Name, Subject_Code, Book_Price, Book_ISBN_10_Number, Book_ISBN_13_Number, Book_Type, First_Name, Contact_Number, Email_Address FROM book_detail;'
 
         //Getting a connection to the MySQL database
         pool.getConnection().then((connection) => {
@@ -470,8 +469,9 @@ catch(error)
 //                book_type
 try{
     router.post('/type', checkAuth, jsonParser, (req, res, next) => {
+        console.log(req.body);
         //Creating SQL variables for the Filter book types
-        var viewBookSQL = 'SELECT Name, Edition, "Author Name", "Subject Code", Price, "ISBN 10", "ISBN 13", Type, "Student Name", "Student Contact Number", "Student Email Address" FROM book_detail where type = ?'
+        var viewBookSQL = 'SELECT Book_Name, Book_Edition, Author_Name, (Subject_Code), Book_Price, Book_ISBN_10_Number, Book_ISBN_13_Number, Book_Type, First_Name, Contact_Number, Email_Address FROM book_detail where Book_Type = ?'
 
         //Creating variables for the data that was requested
         var bookType = req.body.book_type;
@@ -503,7 +503,7 @@ catch(error)
 try{
     router.post('/price', checkAuth, jsonParser, (req, res, next) => {
         //Creating SQL variables for the Filter book types
-        var viewBookSQL = 'SELECT Name, Edition, "Author Name", "Subject Code", Price, "ISBN 10", "ISBN 13", Type, "Student Name", "Student Contact Number", "Student Email Address" FROM book_detail where price <= ?'
+        var viewBookSQL = 'SELECT Book_Name, Book_Edition, Author_Name, Subject_Code, Book_Price, Book_ISBN_10_Number, Book_ISBN_13_Number, Book_Type, First_Name, Contact_Number, Email_Address FROM book_detail where Book_Price <= ?'
 
         //Creating variables for the data that was requested
         var bookPrice = req.body.book_price;
@@ -535,7 +535,7 @@ catch(error)
 try{
     router.post('/subject', checkAuth, jsonParser, (req, res, next) => {
         //Creating SQL variables for the Filter book types
-        var viewBookSQL = 'SELECT `book_detail`.`Name`,`book_detail`.`Edition`,`book_detail`.`Price`,`book_detail`.`ISBN 10`,`book_detail`.`ISBN 13`,`book_detail`.`Type`,`book_detail`.`Student Name`,`book_detail`.`Student Contact Number`,`book_detail`.`Student Email Address`,`book_detail`.`Author Name`,`book_detail`.`Subject Code` FROM `selit_database`.`book_detail` where `book_detail`.`Subject Code` = ?;'
+        var viewBookSQL = 'SELECT Book_Name, Book_Edition, Author_Name, Subject_Code, Book_Price, Book_ISBN_10_Number, Book_ISBN_13_Number, Book_Type, First_Name, Contact_Number, Email_Address FROM book_detail where Subject_Code = ?;'
 
         //Creating variables for the data that was requested
         var bookSubject = req.body.subject_code;
