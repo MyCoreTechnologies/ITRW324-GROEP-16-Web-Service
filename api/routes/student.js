@@ -52,7 +52,6 @@ try{
         var mailOptions = {
             from: 'selitnotifier@gmail.com',
             to: req.body.email_address,
-            cc: 'gvanwyk0@gmail.com',
             subject: 'Registering for SELIT secondhand textbook store.',
             text: 'You have just registered. Now you can use the services SELIT provides, to the students at the North-West University of Potchefstroom.'
         };
@@ -153,6 +152,7 @@ catch(error)
 //                      password
 try{
     router.post('/login',jsonParser,(req, res, next)=>{
+        console.log(req.body);
         //Creating SQL variables for the Login Student
         var rstudent = 'SELECT * FROM student WHERE student_number = ?';
 
@@ -173,7 +173,6 @@ try{
             var mailOptions = {
                 from: 'selitnotifier@gmail.com',
                 to: studentRows[0].Email_Address,
-                cc: 'gvanwyk0@gmail.com',
                 subject: 'SELIT security',
                 text: 'You have just logged Into your SELIT Account'
             };
