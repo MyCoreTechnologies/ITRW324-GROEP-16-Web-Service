@@ -39,6 +39,7 @@ var transporter = nodemailer.createTransport({
 //                date_of_offence
 try{
     router.post('/reportOffence', checkAuth, jsonParser, (req, res, next) => {
+        console.log(req.body);
         //Creating SQL variables for the Create Subject
         var iStudentOffence = 'INSERT INTO `selit_database`.`student_offence` set ?';
 

@@ -45,6 +45,7 @@ var transporter = nodemailer.createTransport({
 //                subject_code
 try{
     router.post('/addBook', checkAuth, jsonParser, (req, res, next) => {
+        console.log(req.body);
         //Creating SQL variables for the create book
         var ibook = 'INSERT INTO book set ?';
         var iauthor = 'INSERT INTO author set ?';
@@ -246,7 +247,7 @@ catch(error)
 try{
     router.get('/getBook', checkAuth, jsonParser, (req, res, next) => {
         //Creating SQL variables for the Read Book
-        var viewBookSQL = 'SELECT Book_Name, Book_Edition, Author_Name, Subject_Code, Book_Price, Book_ISBN_10_Number, Book_ISBN_13_Number, Book_Type, First_Name, Contact_Number, Email_Address FROM book_detail;'
+        var viewBookSQL = 'SELECT Book_Name, Book_Edition, Author_Name, Subject_Code, Book_Price, Book_ISBN_10_Number, Book_ISBN_13_Number, Book_Type, Student_Number, First_Name, Contact_Number, Email_Address FROM book_detail;'
 
         //Getting a connection to the MySQL database
         pool.getConnection().then((connection) => {
@@ -300,7 +301,7 @@ catch(error)
 //URL:  http://localhost:3000/book/myBook
 //Requested data: Key in header
 try{
-    router.get('/mybook', checkAuth, jsonParser, (req, res, next) => {
+    router.get('/myBook', checkAuth, jsonParser, (req, res, next) => {
         //Creating SQL variables for the Read My Book
         var viewBookSQL = 'SELECT book.Book_Number, book.Book_Name, book.Book_Edition, book.Book_ISBN_10_Number, book.Book_ISBN_13_Number, book.Book_Price, book.Book_Type, book.Date_Placed, author.Author_Name,subject.Subject_Code FROM book, book_author, book_subject, author, subject where book.Book_Number = book_author.BOOK_Book_Number and book.Book_Number = book_subject.BOOK_Book_Number and book_author.AUTHOR_Author_Number = author.Author_Number and book_subject.SUBJECT_Subject_Number = subject.Subject_Number and book.STUDENT_Student_Number = ?'
 
@@ -313,6 +314,39 @@ try{
             connection.query(viewBookSQL, studentNumber, (err, result) => {
                 if (result){
                     console.log('Data being collected.');
+                    res.status(200).json(result);
+                }
+                if (err){
+                    res.status(400).json({message:'Data could not be found for personal books placed.'});
+                }                
+            });
+        });
+    });
+}
+catch(error)
+{
+    res.status(500).json({error:'Error caught at Read My Book in api/routes/book.js.'});
+}
+
+//Read My Book for App
+//URL:  http://localhost:3000/book/myBook/app
+//Requested data: Key in header
+try{
+    router.get('/myBook/app', checkAuth, jsonParser, (req, res, next) => {
+        //Creating SQL variables for the Read My Book
+        var viewBookSQL = 'SELECT book.Book_Number, book.Book_Name, book.Book_Edition, book.Book_Price, book.Book_Type, author.Author_Name,subject.Subject_Code FROM book, book_author, book_subject, author, subject where book.Book_Number = book_author.BOOK_Book_Number and book.Book_Number = book_subject.BOOK_Book_Number and book_author.AUTHOR_Author_Number = author.Author_Number and book_subject.SUBJECT_Subject_Number = subject.Subject_Number and book.STUDENT_Student_Number = ?'
+        var x = [];
+        //Creating var to get the student_number of the person logged in
+        var studentNumber = req.keystudentNumber;
+        console.log('1');
+        //Getting a connection to the MySQL database
+        pool.getConnection().then((connection) => {
+            //Sending the SQL query to the database
+            connection.query(viewBookSQL, studentNumber, (err, result) => {
+                if (result){
+                    console.log('Data being collected.');
+                    console.log('2');
+                    x.push({data:[result[0].Book_Number, result[0].Book_Name, result[0].Book_Edition, result[0].Book_Price, result[0].Book_Type, result[0].Author_Name, result[0].Subject_Code], labels:["Book_Number", "Book_Name", "Book_Edition", "Book_Price", "Book_Type", "Author_Name", "Subject_Code"]});
                     res.status(200).json(result);
                 }
                 if (err){
@@ -471,7 +505,7 @@ try{
     router.post('/type', checkAuth, jsonParser, (req, res, next) => {
         console.log(req.body);
         //Creating SQL variables for the Filter book types
-        var viewBookSQL = 'SELECT Book_Name, Book_Edition, Author_Name, (Subject_Code), Book_Price, Book_ISBN_10_Number, Book_ISBN_13_Number, Book_Type, First_Name, Contact_Number, Email_Address FROM book_detail where Book_Type = ?'
+        var viewBookSQL = 'SELECT Book_Name, Book_Edition, Author_Name, (Subject_Code), Book_Price, Book_ISBN_10_Number, Book_ISBN_13_Number, Book_Type, Student_Number, First_Name, Contact_Number, Email_Address FROM book_detail where Book_Type = ?'
 
         //Creating variables for the data that was requested
         var bookType = req.body.book_type;
@@ -503,7 +537,7 @@ catch(error)
 try{
     router.post('/price', checkAuth, jsonParser, (req, res, next) => {
         //Creating SQL variables for the Filter book types
-        var viewBookSQL = 'SELECT Book_Name, Book_Edition, Author_Name, Subject_Code, Book_Price, Book_ISBN_10_Number, Book_ISBN_13_Number, Book_Type, First_Name, Contact_Number, Email_Address FROM book_detail where Book_Price <= ?'
+        var viewBookSQL = 'SELECT Book_Name, Book_Edition, Author_Name, Subject_Code, Book_Price, Book_ISBN_10_Number, Book_ISBN_13_Number, Book_Type, Student_Number, First_Name, Contact_Number, Email_Address FROM book_detail where Book_Price <= ?'
 
         //Creating variables for the data that was requested
         var bookPrice = req.body.book_price;
@@ -535,7 +569,7 @@ catch(error)
 try{
     router.post('/subject', checkAuth, jsonParser, (req, res, next) => {
         //Creating SQL variables for the Filter book types
-        var viewBookSQL = 'SELECT Book_Name, Book_Edition, Author_Name, Subject_Code, Book_Price, Book_ISBN_10_Number, Book_ISBN_13_Number, Book_Type, First_Name, Contact_Number, Email_Address FROM book_detail where Subject_Code = ?;'
+        var viewBookSQL = 'SELECT Book_Name, Book_Edition, Author_Name, Subject_Code, Book_Price, Book_ISBN_10_Number, Book_ISBN_13_Number, Book_Type, Student_Number, First_Name, Contact_Number, Email_Address FROM book_detail where Subject_Code = ?;'
 
         //Creating variables for the data that was requested
         var bookSubject = req.body.subject_code;
@@ -544,6 +578,42 @@ try{
         pool.getConnection().then((connection) => {
             //Sending the SQL query to the database
             connection.query(viewBookSQL, bookSubject, (err, result) => {
+                if (result){
+                    console.log('Book data being collected.');
+                    res.status(200).json(result);
+                }
+                if (err){
+                    res.status(400).json({message:'Data could not be found.'});
+                }                
+            });
+        });
+    });
+}
+catch(error)
+{
+    res.status(500).json({error:'Error caught at Filter Price Book in api/routes/book.js.'});
+}
+
+//Filter Subject and Price Book
+//URL:  http://localhost:3000/book/subject/price/type
+//Requested data: Key in header
+//                subject_code
+//                book_price
+try{
+    router.post('/subject/price/type', checkAuth, jsonParser, (req, res, next) => {
+        console.log(req.body);
+        //Creating SQL variables for the Filter book types
+        var viewBookSQL = 'SELECT Book_Name, Book_Edition, Author_Name, Subject_Code, Book_Price, Book_ISBN_10_Number, Book_ISBN_13_Number, Book_Type, Student_Number, First_Name, Contact_Number, Email_Address FROM book_detail where Subject_Code = ? and Book_Type = ? and Book_Price <= ?;'
+
+        //Creating variables for the data that was requested
+        var bookSubject = req.body.subject_code;
+        var bookPrice = req.body.book_price;
+        var booType = req.body.book_type;
+
+        //Getting a connection to the MySQL database
+        pool.getConnection().then((connection) => {
+            //Sending the SQL query to the database
+            connection.query(viewBookSQL, [bookSubject, booType, bookPrice], (err, result) => {
                 if (result){
                     console.log('Book data being collected.');
                     res.status(200).json(result);

@@ -3,6 +3,7 @@ var jwt = require('jsonwebtoken');
 
 module.exports = (req,res,next)=>{   
     try{
+        // console.log(req.headers.authorization);
         const decoded = jwt.verify(req.headers.authorization,JWT_Organization);
         if(decoded)
         {
