@@ -48,6 +48,7 @@ var transporter = nodemailer.createTransport({
 //                      admin ---- default 0
 try{
     router.post('/register',jsonParser,(req, res, next)=>{
+        console.log(req.body);
         //Creating the email to be send when a student registers
         var mailOptions = {
             from: 'selitnotifier@gmail.com',
