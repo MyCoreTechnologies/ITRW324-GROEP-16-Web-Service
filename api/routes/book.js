@@ -247,7 +247,7 @@ catch(error)
 try{
     router.get('/getBook', checkAuth, jsonParser, (req, res, next) => {
         //Creating SQL variables for the Read Book
-        var viewBookSQL = 'SELECT Book_Name, Book_Edition, Author_Name, Subject_Code, Book_Price, Book_ISBN_10_Number, Book_ISBN_13_Number, Book_Type, Student_Number, First_Name, Contact_Number, Email_Address FROM book_detail;'
+        var viewBookSQL = 'SELECT Book_Name, Book_Edition, Author_Name, Subject_Code, Book_Price, Book_ISBN_10_Number, Book_ISBN_13_Number, Book_Type, Date_Placed, Student_Number, First_Name, Contact_Number, Email_Address FROM book_detail;'
 
         //Getting a connection to the MySQL database
         pool.getConnection().then((connection) => {
