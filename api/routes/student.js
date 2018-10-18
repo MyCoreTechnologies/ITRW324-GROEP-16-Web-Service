@@ -243,5 +243,35 @@ catch (error)
     res.status(500).json({message:'Error caught at Read student in api/routes/student.js.'});
 }
 
+//Make Student Admin
+//URL: http://localhost:3000/student/setStudentAdmin
+//Requested data: Admin key in header
+//                  student_number
+try{
+    router.post('/setStudentAdmin', adminAuth, jsonParser, (req, res, next) => {
+        //Creating variables to Update Student
+        var uStudent = 'UPDATE Student SET Admin = 1 WHERE Student_Number = ?'
+        //Getting a connection to the MySQL Database
+        pool.getConnection().then((connection) => {
+            //Sending the SQL query to the database
+            connection.query(uStudent, req.body.student_number, (err, result) => {
+                if (result){
+                    console.log('Student was made an Admin.');
+                    //Sending response
+                    res.status(200).json(result);
+                }
+                if (err){
+                    res.status(400).json({message:'Could not update the students data from the database'});
+                }
+            });
+        });     
+    })
+}
+catch (error)
+{
+    res.status(500).json({message:'Error caught at Read student in api/routes/student.js.'});
+}
+
+
 //Exporting all the different routes to app.js
 module.exports = router;
