@@ -198,5 +198,30 @@ try{
     res.status(500).json({message:'Error caught at Delete Student_Offence in api/routes/student_offence.js.'});
 }
 
+//Check Student Offence
+//URL:  http://localhost:3000/student_offence/checkOffence
+//Requested data:   student_number
+try{
+    router.post('/checkOffence', jsonParser, (req, res, next) => {
+        //Creating the SQL variables to read student offence table
+        var rOffence = 'SELECT type_of_offence FROM student_offence WHERE student_student_number = ?';
+        //Getting a connection to the MySQL Database
+        pool.getConnection().then((connection) => {
+            //Sending the SQL query to the database
+            connection.query(rOffence, req.body.student_number, (err, result) => {
+                if (result){
+                    console.log('Data is being collected.')
+                    res.status(200).json(result);
+                }
+                if (err){
+                    res.status(400).json({message:'Could not read the offence data from the database'});
+                }
+            });
+        });
+    });
+}catch (error){
+    res.status(500).json({message:'Error caught at Read Student Offence in api/routes/student_offence.js.'});
+}
+
 //Exporting all the different routes to app.js
 module.exports = router;
