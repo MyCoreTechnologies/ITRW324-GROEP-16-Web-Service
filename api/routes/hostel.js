@@ -2,7 +2,7 @@
 //Hostel table/route needs the following:
 //Admin can create, read, update
 //Creation of a hostel is only in extreme rare cases where the university adds a new hostel
-//Hostel cannot be deleted due to the ammount of students linked to each hostel
+//Hostel cannot be deleted due to the amount of students linked to each hostel
 
 //Constant variables and variables for all used api's and directories
 const express = require('express');
@@ -21,9 +21,12 @@ var pool = mysql.createPool({
 });
 
 //Create Hostel
+//This method is used to add a hostel to the system
 //URL:  http://localhost:3000/hostel/addHostel
-//Requested data: Admin Key in header
-//                hostel_name
+//Requested data:   Admin Key in header
+//                  hostel_name
+//Data sent:        200 If the adding was successful
+//                  400 If the adding was unsuccessful
 try{
     router.post('/addHostel', adminAuth, jsonParser, (req, res, next) => {
         //Creating SQL variables for the Create Hostel
@@ -54,8 +57,11 @@ catch(error)
 }
 
 //Read Hostel
+//This method is used to view all the hostels in the system
 //URL:  http://localhost:3000/hostel/getHostel
-//Requested data: Admin Key in header
+//Requested data:   Admin Key in header
+//Data sent:        JSON format of all the hostels in the system 
+//                  400 If the adding was unsuccessful
 try{
     router.get('/getHostel', adminAuth, jsonParser, (req, res, next) => {
         //Creating SQL variables for the Read Hostel
@@ -82,10 +88,13 @@ catch(error)
 }
 
 //Update Hostel
+//This method is used to update a hostel when its needed
 //URL:  http://localhost:3000/hostel/updateHostel
-//Requested Data: Administrator key in header
-//                o_hostel_name ----Original hostel name to be updated
-//                n_hostel_name ----New hostel name
+//Requested Data:   Administrator key in header
+//                  o_hostel_name ----Original hostel name to be updated
+//                  n_hostel_name ----New hostel name
+//Data sent:        200 If the update was successful
+//                  400 If the update was unsuccessful
 try{
     router.post('/updateHostel', adminAuth, jsonParser, (req, res, next) => {
         //Creating SQL variables to Update the hostel table

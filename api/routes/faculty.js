@@ -2,7 +2,7 @@
 //Faculty table/route needs the following:
 //Admin can create, read, update
 //Creation of a faculty is only in extreme rare cases where the university adds a new faculty
-//Faculty cannot be deleted due to the ammount of subjects linked to each faculty
+//Faculty cannot be deleted due to the amount of subjects linked to each faculty
 
 //Constant variables and variables for all used api's and directories
 const express = require('express');
@@ -21,9 +21,12 @@ var pool = mysql.createPool({
 });
 
 //Create Faculty
+//This method is used to add a facility to the system
 //URL:  http://localhost:3000/faculty/addFaculty
-//Requested data: Admin Key in header
-//                faculty_name
+//Requested data:   Admin Key in header
+//                  faculty_name
+//Data sent:        200 If the adding was successful
+//                  400 If the adding was unsuccessful
 try{
     router.post('/addFaculty', adminAuth, jsonParser, (req, res, next) => {
         //Creating SQL variables for the Create Faculty
@@ -54,8 +57,11 @@ catch(error)
 }
 
 //Read Faculty
+//This method is used to display all the facilities in the system
 //URL:  http://localhost:3000/faculty/getFaculty
-//Requested data: Admin Key in header
+//Requested data:   Admin Key in header
+//Data sent:        JSON format of all the faculities in the system 
+//                  400 If the reading was unsuccessful
 try{
     router.get('/getFaculty', adminAuth, jsonParser, (req, res, next) => {
         //Creating SQL variables for the Read Faculty
@@ -82,10 +88,13 @@ catch(error)
 }
 
 //Update Faculty
+//This method is used to update a system when its needed
 //URL:  http://localhost:3000/faculty/updateFaculty
-//Requested Data: Administrator key in header
-//                o_faculty_name ----Original faculty name to be updated
-//                n_faculty_name ----New faculty name
+//Requested Data:   Administrator key in header
+//                  o_faculty_name ----Original faculty name to be updated
+//                  n_faculty_name ----New faculty name
+//Data sent:        200 If the update was successful
+//                  400 If the update was unsuccessful
 try{
     router.post('/updateFaculty', adminAuth, jsonParser, (req, res, next) => {
         //Creating SQL variables to Update the author table

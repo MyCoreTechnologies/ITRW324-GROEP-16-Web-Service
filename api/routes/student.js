@@ -2,7 +2,7 @@
 //Student table/route needs the following:
 //Admin can read
 //Public can register for services and log in
-//Student cant be deleted as of v.1.0.0
+//Student can't be deleted as of v.1.0.0
 
 //Constant variables and variables for all used api's and directories
 const express = require('express');
@@ -35,6 +35,7 @@ var transporter = nodemailer.createTransport({
 });
 
 //Create Student
+//This method is used to register a student for the system
 //URL:  http://localhost:3000/student/register
 //Requested data:       student_number
 //                      first_name
@@ -46,9 +47,10 @@ var transporter = nodemailer.createTransport({
 //                      hostel_name
 //                      student ---- default 1
 //                      admin ---- default 0
+//Data sent:            200 If the creation was successful
+//                      400 If the creation was unsuccessful
 try{
     router.post('/register',jsonParser,(req, res, next)=>{
-        console.log(req.body);
         //Creating the email to be send when a student registers
         var mailOptions = {
             from: 'selitnotifier@gmail.com',
@@ -148,12 +150,14 @@ catch(error)
 }
 
 //Login Student
+//This method is used to log in a student
 //URL:  http://localhost:3000/student/login
 //Requested data:       student_number
 //                      password
+//Data sent:            Token if the login was successful
+//                      400 If the login was unsuccessful
 try{
     router.post('/login',jsonParser,(req, res, next)=>{
-        console.log(req.body);
         //Creating SQL variables for the Login Student
         var rstudent = 'SELECT * FROM student WHERE student_number = ?';
 
@@ -217,8 +221,11 @@ catch (error)
 }
 
 //Read Student
+//This method is used to view all the students in the system
 //URL: http://localhost:3000/student/getStudent
-//Requested data: Admin key in header
+//Requested data:   Admin key in header
+//Data sent:        JSON format to read all the students in the system
+//                  400 If the read was unsuccessful
 try{
     router.get('/getStudent', adminAuth, jsonParser, (req, res, next) => {
         //Creating variables to Read Student
@@ -244,9 +251,12 @@ catch (error)
 }
 
 //Make Student Admin
+//This method is used to update/promote a student to administrator
 //URL: http://localhost:3000/student/setStudentAdmin
-//Requested data: Admin key in header
+//Requested data:   Admin key in header
 //                  student_number
+//Data sent:        200 If the update was successful
+//                  400 If the update was unsuccessful
 try{
     router.post('/setStudentAdmin', adminAuth, jsonParser, (req, res, next) => {
         //Creating variables to Update Student

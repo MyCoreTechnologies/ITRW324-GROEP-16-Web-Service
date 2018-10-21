@@ -21,11 +21,14 @@ var pool = mysql.createPool({
 });
 
 //Create Subject
+//This method is used to add a subject to the system
 //URL:  http://localhost:3000/subject/addSubject
-//Requested data: Admin Key in header
-//                subject_code
-//                subject_name
-//                faculty_name
+//Requested data:   Admin Key in header
+//                  subject_code
+//                  subject_name
+//                  faculty_name
+//Data sent:        200 If the creation was successful
+//                  400 If the creation was unsuccessful
 try{
     router.post('/addSubject', adminAuth, jsonParser, (req, res, next) => {
         //Creating SQL variables for the Create Subject
@@ -87,8 +90,11 @@ catch(error)
 }
 
 //Read Subject
+//This method is used to read all the subjects in the system
 //URL:  http://localhost:3000/subject/getSubject
-//Requested data: Administrator key in header
+//Requested data:   Administrator key in header
+//Data sent:        JSON format of all the subjects in the system
+//                  400 If the read was unsuccessful
 try{
     router.get('/getSubject', adminAuth, jsonParser, (req, res, next) => {
         //Creating the SQL variables to read subject table
@@ -110,7 +116,6 @@ try{
 }catch (error){
     res.status(500).json({message:'Error caught at Read Subject in api/routes/subject.js.'});
 }
-
 
 //Exporting all the different routes to app.js
 module.exports = router;

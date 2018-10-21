@@ -2,7 +2,7 @@
 //Province table/route needs the following:
 //Admin can create, read, update
 //Creation of a province is only needed when we want to add a province from another country
-//Province cannot be deleted due to the ammount of students linked to each province
+//Province cannot be deleted due to the amount of students linked to each province
 
 //Constant variables and variables for all used api's and directories
 const express = require('express');
@@ -21,9 +21,12 @@ var pool = mysql.createPool({
 });
 
 //Create Province
+//This method is used to create a new province
 //URL:  http://localhost:3000/province/addProvince
-//Requested data: Admin Key in header
-//                province_name
+//Requested data:   Admin Key in header
+//                  province_name
+//Data sent:        200 If the creation was successful
+//                  400 If the creation was unsuccessful
 try{
     router.post('/addProvince', adminAuth, jsonParser, (req, res, next) => {
         //Creating SQL variables for the Create Province
@@ -54,8 +57,11 @@ catch(error)
 }
 
 //Read Province
+//this method is used to read all the provinces in the system
 //URL:  http://localhost:3000/province/getProvince
-//Requested data: Admin Key in header
+//Requested data:   Admin Key in header
+//Data sent:        jSON format of all the provinces in the system
+//                  400 If the read was unsuccessful
 try{
     router.get('/getProvince', adminAuth, jsonParser, (req, res, next) => {
         //Creating SQL variables for the Read Province
@@ -82,10 +88,13 @@ catch(error)
 }
 
 //Update Province
+//This method is used to update a province for when its needed
 //URL:  http://localhost:3000/province/updateProvince
-//Requested Data: Administrator key in header
-//                o_province_name ----Original province name to be updated
-//                n_province_name ----New province name
+//Requested Data:   Administrator key in header
+//                  o_province_name ----Original province name to be updated
+//                  n_province_name ----New province name
+//Data sent:        200 If the update was successful
+//                  400 If the update was unsuccessful
 try{
     router.post('/updateProvince', adminAuth, jsonParser, (req, res, next) => {
         //Creating SQL variables to Update the province table

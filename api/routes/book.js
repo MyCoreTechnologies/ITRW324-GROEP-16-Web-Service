@@ -32,19 +32,21 @@ var transporter = nodemailer.createTransport({
 });
 
 //Create book
+//This method is used to add a book to the system
 //URL:  http://localhost:3000/book/addBook
-//Requested data: Key in header
-//                book_name
-//                book_edition
-//                book_isbn_10_number
-//                book_isbn_13_number
-//                book_price
-//                book_type
-//                author_name
-//                subject_code
+//Requested data:   Key in header
+//                  book_name
+//                  book_edition
+//                  book_isbn_10_number
+//                  book_isbn_13_number
+//                  book_price
+//                  book_type
+//                  author_name
+//                  subject_code
+//Data sent:        200 If the adding was successful
+//                  400 If the adding was unsuccessful
 try{
     router.post('/addBook', checkAuth, jsonParser, (req, res, next) => {
-        console.log(req.body);
         //Creating SQL variables for the create book
         var ibook = 'INSERT INTO book set ?';
         var iauthor = 'INSERT INTO author set ?';
@@ -241,8 +243,11 @@ catch(error)
 }
 
 //Read Book
+//This is a get method to get all the books in the system
 //URL:  http://localhost:3000/book/getBook
-//Requested data: Key in header
+//Requested data:   Key in header
+//Data sent:        JSON format of all the books in the system
+//                  400 If the adding was unsuccessful
 try{
     router.get('/getBook', checkAuth, jsonParser, (req, res, next) => {
         //Creating SQL variables for the Read Book
@@ -269,8 +274,11 @@ catch(error)
 }
 
 //Admin Read Book
+//This method is for administrators to view more information of the all books in the system
 //URL:  http://localhost:3000/book/adminBook
-//Requested data: Admin Key in header
+//Requested data:   Admin Key in header
+//Data sent:        JSON format of all the books in the system
+//                  400 If the adding was unsuccessful
 try{
     router.get('/adminBook', adminAuth, jsonParser, (req, res, next) => {
         //Creating SQL variables for the Read Book
@@ -297,8 +305,11 @@ catch(error)
 }
 
 //Read My Book
+//Used to view the users book in the system
 //URL:  http://localhost:3000/book/myBook
-//Requested data: Key in header
+//Requested data:   Key in header
+//Data sent:        JSON format of the users books in the system
+//                  400 If the adding was unsuccessful
 try{
     router.get('/myBook', checkAuth, jsonParser, (req, res, next) => {
         //Creating SQL variables for the Read My Book
@@ -327,43 +338,13 @@ catch(error)
     res.status(500).json({error:'Error caught at Read My Book in api/routes/book.js.'});
 }
 
-//Read My Book for App
-//URL:  http://localhost:3000/book/myBook/app
-//Requested data: Key in header
-try{
-    router.get('/myBook/app', checkAuth, jsonParser, (req, res, next) => {
-        //Creating SQL variables for the Read My Book
-        var viewBookSQL = 'SELECT book.Book_Number, book.Book_Name, book.Book_Edition, book.Book_Price, book.Book_Type, author.Author_Name,subject.Subject_Code FROM book, book_author, book_subject, author, subject where book.Book_Number = book_author.BOOK_Book_Number and book.Book_Number = book_subject.BOOK_Book_Number and book_author.AUTHOR_Author_Number = author.Author_Number and book_subject.SUBJECT_Subject_Number = subject.Subject_Number and book.STUDENT_Student_Number = ?'
-        var x = [];
-        //Creating var to get the student_number of the person logged in
-        var studentNumber = req.keystudentNumber;
-        console.log('1');
-        //Getting a connection to the MySQL database
-        pool.getConnection().then((connection) => {
-            //Sending the SQL query to the database
-            connection.query(viewBookSQL, studentNumber, (err, result) => {
-                if (result){
-                    console.log('Data being collected.');
-                    console.log('2');
-                    x.push({data:[result[0].Book_Number, result[0].Book_Name, result[0].Book_Edition, result[0].Book_Price, result[0].Book_Type, result[0].Author_Name, result[0].Subject_Code], labels:["Book_Number", "Book_Name", "Book_Edition", "Book_Price", "Book_Type", "Author_Name", "Subject_Code"]});
-                    res.status(200).json(result);
-                }
-                if (err){
-                    res.status(400).json({message:'Data could not be found for personal books placed.'});
-                }                
-            });
-        });
-    });
-}
-catch(error)
-{
-    res.status(500).json({error:'Error caught at Read My Book in api/routes/book.js.'});
-}
-
 //Delete Book
+//This method is used to detele a book from the system if the book belongs to the user who initiated the deletion.
 //URL:  http://localhost:3000/book/myBook/delete
-//Requested data: Key in header
-//                book_number
+//Requested data:   Key in header
+//                  book_number
+//Data sent:        200 If the deletion was successful
+//                  400 If the deletion was unsuccessful
 try{
     router.post('/myBook/delete', checkAuth, jsonParser, (req, res, next) => {
         //Creating SQL variables for the Admin Delete Book
@@ -433,9 +414,12 @@ catch(error)
 }
 
 //Admin Delete Book
+//This method is used by administrators to delete any book in the system.
 //URL:  http://localhost:3000/book/adminbook/delete
-//Requested data: Admin key in header
-//                book_number
+//Requested data:   Admin key in header
+//                  book_number
+//Data sent:        200 If the deletion was successful
+//                  400 If the deletion was unsuccessful
 try{
     router.post('/adminBook/delete', adminAuth, jsonParser, (req, res, next) => {
         //Creating SQL variables for the Admin Delete Book
@@ -497,12 +481,14 @@ catch(error)
 }
 
 //Filter Type Book
+//This method is used to filter the books by book type
 //URL:  http://localhost:3000/book/type
-//Requested data: Key in header
-//                book_type
+//Requested data:   Key in header
+//                  book_type
+//Data sent:        JSON format of all the filtered books
+//                  400 If the filter was unsuccessful
 try{
     router.post('/type', checkAuth, jsonParser, (req, res, next) => {
-        console.log(req.body);
         //Creating SQL variables for the Filter book types
         var viewBookSQL = 'SELECT Book_Name, Book_Edition, Author_Name, (Subject_Code), Book_Price, Book_ISBN_10_Number, Book_ISBN_13_Number, Book_Type, Student_Number, First_Name, Contact_Number, Email_Address FROM book_detail where Book_Type = ?'
 
@@ -530,9 +516,12 @@ catch(error)
 }
 
 //Filter Price Book
+//This method is used to filter the books by price
 //URL:  http://localhost:3000/book/price
 //Requested data: Key in header
 //                book_price
+//Data sent:        JSON format of all the filtered books
+//                  400 If the filter was unsuccessful
 try{
     router.post('/price', checkAuth, jsonParser, (req, res, next) => {
         //Creating SQL variables for the Filter book types
@@ -562,9 +551,12 @@ catch(error)
 }
 
 //Filter Subject Book
+//This method is used to filter the books by subject
 //URL:  http://localhost:3000/book/subject
 //Requested data: Key in header
 //                subject_code
+//Data sent:        JSON format of all the filtered books
+//                  400 If the filter was unsuccessful
 try{
     router.post('/subject', checkAuth, jsonParser, (req, res, next) => {
         //Creating SQL variables for the Filter book types
@@ -594,13 +586,15 @@ catch(error)
 }
 
 //Filter Subject and Price Book
+//This method is used to filter the books by subject, price and book type
 //URL:  http://localhost:3000/book/subject/price/type
 //Requested data: Key in header
 //                subject_code
 //                book_price
+//Data sent:        JSON format of all the filtered books
+//                  400 If the filter was unsuccessful
 try{
     router.post('/subject/price/type', checkAuth, jsonParser, (req, res, next) => {
-        console.log(req.body);
         //Creating SQL variables for the Filter book types
         var viewBookSQL = 'SELECT Book_Name, Book_Edition, Author_Name, Subject_Code, Book_Price, Book_ISBN_10_Number, Book_ISBN_13_Number, Book_Type, Student_Number, First_Name, Contact_Number, Email_Address FROM book_detail where Subject_Code = ? and Book_Type = ? and Book_Price <= ?;'
 

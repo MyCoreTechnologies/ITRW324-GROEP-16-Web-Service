@@ -1,6 +1,6 @@
 //URL:  http://localhost:3000/author
 //Author table/route needs the following:
-//Admin can create, read, update and delete
+//Admins that can create, read, update and delete data
 
 //Constant variables and variables for all used api's and directories
 const express = require('express');
@@ -19,9 +19,12 @@ var pool = mysql.createPool({
 });
 
 //Create Author
+//This post method will add a new author to the database
 //URL:  http://localhost:3000/author/addAuthor
-//Requested data: Administrator key in header
-//                author_name
+//Requested data:   Administrator key in header
+//                  author_name
+//Data sent:        200 If the adding was successful
+//                  400 If the adding was unsuccessful
 try{
     router.post('/addAuthor', adminAuth, jsonParser, (req, res, next) => {
         //Creating SQL variables for create author
@@ -51,8 +54,11 @@ try{
 }
 
 //Read Author
+//This get method will return a list of all the authors in the system. 
 //URL:  http://localhost:3000/author/getAuthor
-//Requested data: Administrator key in header
+//Requested data:   Administrator key in header
+//Data sent:        JSON format of all authors
+//                  400 If the adding was unsuccessful
 try{
     router.get('/getAuthor', adminAuth, jsonParser, (req, res, next) => {
         //Creating the SQL variables to read author table
@@ -76,10 +82,13 @@ try{
 }
 
 //Update Author
+//This get method will allow an administrator to update an author when it is needed. 
 //URL:  http://localhost:3000/author/updateAuthor
 //Requested Data: Administrator key in header
 //                o_author_name ----Original author name to be updated
 //                n_author_name ----New author name
+//Data sent:        200 If the update was successful
+//                  400 If the update was unsuccessful
 try{
     router.post('/updateAuthor', adminAuth, jsonParser, (req, res, next) => {
         //Creating SQL variables to Update the author table
@@ -116,10 +125,13 @@ try{
 }
 
 //Delete Author
+//This method will allow an administator to delete an author
 //URL:  http://localhost:3000/author/deleteAuthor
 //NOTE:Admins can only remove Authors not Attached to any books.
 //Requested data:  Administrator key in header
 //                 author_name
+//Data sent:        200 If the delete was successful
+//                  400 If the delete was unsuccessful
 try{
     router.post('/deleteAuthor', adminAuth, jsonParser, (req, res, next) => {
         //Creating SQL variables to delete an author

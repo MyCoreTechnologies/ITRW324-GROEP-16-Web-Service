@@ -31,12 +31,15 @@ var transporter = nodemailer.createTransport({
 });
 
 //Create Student Offence
+//This method is used to report a student for an offence
 //URL:  http://localhost:3000/student_offence/reportOffence
-//Requested data: Key in header
-//                student_number
-//                reason
-//                type_of_offence ---- default Reported
-//                date_of_offence
+//Requested data:   Key in header
+//                  student_number
+//                  reason
+//                  type_of_offence ---- default Reported
+//                  date_of_offence
+//Data sent:        200 If the creation was successful
+//                  400 If the creation was unsuccessful
 try{
     router.post('/reportOffence', checkAuth, jsonParser, (req, res, next) => {
         console.log(req.body);
@@ -95,8 +98,11 @@ catch(error)
 }
 
 //Read Student Offence
+//This method is used to read all the offences in the system
 //URL:  http://localhost:3000/student_offence/getOffence
-//Requested data: Administrator key in header
+//Requested data:   Administrator key in header
+//Data sent:        JSON format of all the offences in the system
+//                  400 If the read was unsuccessful
 try{
     router.get('/getOffence', adminAuth, jsonParser, (req, res, next) => {
         //Creating the SQL variables to read student offence table
@@ -120,10 +126,13 @@ try{
 }
 
 //Update Upgrade Student_Offence
+//This method is used to warn or ban a student
 //URL:  http://localhost:3000/student_offence/upgradeOffence
-//Requested Data: Administrator key in header
-//                offence_number
-//                type_of_offence ----New type of offence
+//Requested Data:   Administrator key in header
+//                  offence_number
+//                  type_of_offence ----New type of offence
+//Data sent:        200 If the update was successful
+//                  400 If the update was unsuccessful
 try{
     router.post('/upgradeOffence', adminAuth, jsonParser, (req, res, next) => {
         //Creating SQL variables to Update the author table
@@ -160,9 +169,12 @@ try{
 }
 
 //Delete Student_Offence
+//This method is used to delete a false or un needed report
 //URL:  http://localhost:3000/student_offence/deleteOffence
-//Requested Data: Administrator key in header
-//                offence_number
+//Requested Data:   Administrator key in header
+//                  offence_number
+//Data sent:        200 If the deletion was successful
+//                  400 If the deletion was unsuccessful
 try{
     router.post('/deleteOffence', adminAuth, jsonParser, (req, res, next) => {
         //Creating SQL variables to Update the author table
@@ -199,8 +211,11 @@ try{
 }
 
 //Check Student Offence
+//This method is used to check if the student who wants to log in has an offence against him/her
 //URL:  http://localhost:3000/student_offence/checkOffence
 //Requested data:   student_number
+//Data sent:        JSON format for the offences found
+//                  400 If the read was unsuccessful
 try{
     router.post('/checkOffence', jsonParser, (req, res, next) => {
         //Creating the SQL variables to read student offence table
