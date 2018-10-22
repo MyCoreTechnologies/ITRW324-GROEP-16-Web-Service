@@ -43,9 +43,11 @@ try{
             connection.query(iFaculty, faculty, (err, result, fields) => {
                 if (result){
                     res.status(200).json({message:'Faculy added'});
+                    connection.release();                    
                 }
                 if (err){
                     res.status(400).json({message:'Faculy could not be added.'});
+                    connection.release();
                 }            
             });
         });
@@ -72,11 +74,12 @@ try{
             //Sending SQL query to the database
             connection.query(rFaculty, (err, result) => {
                 if (result){
-                    console.log('Data is being collected.');
                     res.status(200).json(result);
+                    connection.release();
                 }
                 if (err){
                     res.status(400).json({message:'Could not retrieve faculty data.'});
+                    connection.release();
                 }            
             });
         });
@@ -112,15 +115,18 @@ try{
             if(facultyRow.length === 0)
             {
                 res.status(400).json({message:'Faculty does not exist in databse'});
+                connection.release();
             } else {
                 //Sending the update query to the databse with the old and new values
                 connection.query(uFaculty, [req.body.n_faculty_name, req.body.o_faculty_name], (err, result) => {
                     if(result){
                         console.log('Updating faculty table.')
                         res.status(200).json({message:'Faculty was updated'});
+                        connection.release();
                     }
                     if (err){
                         res.status(400).json({message:'Faculty could not be updated'});;
+                        connection.release();
                     }
                 })
             }

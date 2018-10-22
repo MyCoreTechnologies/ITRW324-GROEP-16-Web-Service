@@ -50,10 +50,10 @@ try{
             //If statement to test if the data you are looking for exist.
             if(facultyRow.length === 0){
                 res.status(400).json({message:'Faculty does not exist.'});
+                connection.release();
             } else {
                 facultyNumber = facultyRow[0].Faculty_Number;
             }
-            console.log(facultyNumber);
             return connection.query(rSubject, req.body.subject_code);
         })
         .then(function(subjectRow){
@@ -70,17 +70,21 @@ try{
                 connection.query(iSubject, subject, (err, result) => {
                     if (result){
                         res.status(200).json({message:'Subject added'});
+                        connection.release();
                     }
                     if (err){
                         res.status(400).json({message:'Subject could not be added.'});
+                        connection.release();
                     }            
                 });
             } else {
                 res.status(400).json({message:'Subject already exist.'});
+                connection.release();
             }
         })
         .catch(function(err){
-            res.status(400).json({message:'Something went wrong when we tried to insert the subject.'})
+            res.status(400).json({message:'Something went wrong when we tried to insert the subject.'});
+            connection.release();
         });            
     });
 }
@@ -104,11 +108,12 @@ try{
             //Sending the SQL query to the database
             connection.query(rSubject, (err, result) => {
                 if (result){
-                    console.log('Data is being collected.')
                     res.status(200).json(result);
+                    connection.release();
                 }
                 if (err){
                     res.status(400).json({message:'Could not read the subject data from the database'});
+                    connection.release();
                 }
             });
         });

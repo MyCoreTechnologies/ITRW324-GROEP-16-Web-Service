@@ -71,7 +71,6 @@ try{
     
         //Hasing the password and adding salt to encrypt it
         var hash = bcrypt.hashSync(req.body.password,salt);
-        console.log('Password hash success');
     
         //Getting a connection to the MySQL database
         pool.getConnection()
@@ -84,6 +83,7 @@ try{
             //If statement to test if the data exist that you are looking for
             if(provinceRow === 0){
                 res.status(400).json({message:'Province does not exist.'});
+                connection.release();
             } else {
                 provinceNumber = provinceRow[0].Province_Number;
             }
@@ -94,6 +94,7 @@ try{
             //If statement to test if the data exist that you are looking for
            if(hostelRow === 0){
                 res.status(400).json({message:'Hostel does not exist.'});
+                connection.release();
             } else {
                 hostelNumber = hostelRow[0].Hostel_Number;
             }
@@ -102,7 +103,6 @@ try{
         })
         .then(function(studentRow){
             //If statement to test if the data exist that you want to create
-            console.log(studentRow)
             if(studentRow.length === 0){
                 var student = 
                 {
@@ -122,25 +122,29 @@ try{
                 connection.query(istudent, student, (err,ress)=>{
                     if(ress){
                         res.status(201).json({message: "User registered"} );
+                        connection.release();
                         //Sending an email to the student letting them know they are registered
                         transporter.sendMail(mailOptions, function(error){
                             if (error) {
                                 console.log(error);
                             } else {
-                                console.log('Email sent to ' + req.body.student_number + ' using '+ req.body.email_address);
+                                console.log('Email sent to ' + req.body.student_number + ' using '+ req.body.email_address)
                             }
                         });
                     } 
                     if(err){
                         res.status(400).json({message:'Could not register the student.'});
+                        connection.release();
                     }
                 });
             } else {
                 res.status(400).json({message:'You are already in the system.'});
+                connection.release();
             }
         })
         .catch(function(err) {
             res.status(400).json({message:'Error has occured while registering the student.'});
+            connection.release();
         });
     });
 }
@@ -186,6 +190,7 @@ try{
             var passwordmatch = bcrypt.compareSync(password, studentRows[0].Password);
             if(passwordmatch === false){
                 res.status(401).json({message:'Wrong Password'});
+                connection.release();
             }
             //If to test if the passwords match      
             if(passwordmatch == true)
@@ -205,13 +210,16 @@ try{
                     student: studentRows[0].Student, 
                     admin: studentRows[0].Admin},
                     JWT_Organization,
-                    {expiresIn: '1h'});
+                    {expiresIn: '1h'});             
                 return res.status(200).json({body:tokenv});
+                connection.release();
             }
             res.status(401).json({message:'Authentication failed'});
+            connection.release();
         })
         .catch(function(err) {
             res.status(404).json({error:'Error occured with the login student sql statements.'});
+            connection.release();
         });
     });
 }
@@ -234,12 +242,13 @@ try{
         pool.getConnection().then((connection) => {
             //Sending the SQL query to the database
             connection.query(rStudent, (err, result) => {
-                if (result){
-                    console.log('Data is being collected.');
+                if (result){                    
                     res.status(200).json(result);
+                    connection.release();
                 }
                 if (err){
                     res.status(400).json({message:'Could not read the students data from the database'});
+                    connection.release();
                 }
             });
         });     

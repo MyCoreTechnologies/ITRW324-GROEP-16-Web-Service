@@ -40,11 +40,12 @@ try{
             //Sending the SQL query to the database
             connection.query(iAuthor, author, (err, result) => {
                 if (result){
-                    console.log('Data is being added');
                     res.status(200).json({message:'Author was added to the database'});
+                    connection.release();
                 }
                 if (err){
                     res.status(400).json({message:'Could not insert the author data to the database'});
+                    connection.release();
                 }                
             });
         });
@@ -68,11 +69,12 @@ try{
             //Sending the SQL query to the database
             connection.query(rAuthor, (err, result) => {
                 if (result){
-                    console.log('Data is being collected.')
                     res.status(200).json(result);
+                    connection.release();
                 }
                 if (err){
                     res.status(400).json({message:'Could not read the author data from the database'});
+                    connection.release();
                 }
             });
         });
@@ -106,15 +108,17 @@ try{
             if(authorRow.length === 0)
             {
                 res.status(400).json({message:'Author does not exist in databse'});
+                connection.release();
             } else {
                 //Sending the update query to the databse with the old and new values
                 connection.query(uAuthor, [req.body.n_author_name, req.body.o_author_name], (err, result) => {
                     if(result){
-                        console.log('Updating author table.')
                         res.status(200).json({message:'Author was updated'});
+                        connection.release();
                     }
                     if (err){
-                        res.status(400).json({message:'Author could not be updated'});;
+                        res.status(400).json({message:'Author could not be updated'});
+                        connection.release();
                     }
                 })
             }
@@ -149,15 +153,17 @@ try{
             if(authorRow.length === 0)
             {
                 res.status(400).json({message:'Author does not exist in databse'});
+                connection.release();
             } else {
                 //Sending the second SQL theory to delete the author
                 connection.query(dAuthor, authorRow[0].Author_Number, (err, result, fields) => {
                     if(result){
-                        console.log('Deleting Author');
                         res.status(200).json({message:'Author was removed'});
+                        connection.release();
                     }
                     if (err){
                         res.status(400).json({message:'Author was not deleted.'});
+                        connection.release();
                     }
                 })
             }            

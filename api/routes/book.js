@@ -91,13 +91,13 @@ try{
         .then(function(subjectRow){
             //If function to test if the data you want to find exists in the database
             if(subjectRow[0].length === 0)
-            {
+            {                
                 res.status(400).json({message:'Subject does not exist.'});
+                connection.release();
             } else{
                 if(subjectRow[0].Subject_Code === req.body.subject_code)
-                {
+                {                    
                     subject_number = subjectRow[0].Subject_Number;
-                    console.log('Subject read.');
                 }
             }
             //Sending a SQL query to the database and making a PROMISE
@@ -109,11 +109,9 @@ try{
             {
                 //Sending a SQL query to the database to add the book
                 connection.query(ibook, book, (err, result) => {
-                    if (result){
-                        console.log('Book was added');
-                    }
-                    if (err){
+                    if (err){                        
                         res.status(400).json({message:'Could not add Book'});
+                        connection.release();
                     }                    
                 });
             }
@@ -123,11 +121,11 @@ try{
         .then(function(booksRow){
             //If function to test if the data you want to find exists in the database
             if(booksRow.length === 0)
-            {
-                res.status(400).json({message:'Books data is empty.'});
+            {               
+                res.status(400).json({message:'Books data is empty.'}); 
+                connection.release();
             } else {
                 book_number = booksRow[0].Book_Number;
-                console.log('Book read.');
             }
             
             //Sending a SQL query to the database and making a PROMISE    
@@ -139,11 +137,9 @@ try{
             {
                 //Sending a SQL query to the database
                 connection.query(iauthor, author, (err, result) => {
-                    if (result){
-                        console.log('Author added.');
-                    }
                     if (err){
                         res.status(400).json({message:'Author was not added.'});
+                        connection.release();
                     }                    
                     })
             }
@@ -155,11 +151,11 @@ try{
             if(authorsRow.length === 0)
             {
                 res.status(400).json({message:'Author was not found.'});
+                connection.release();
             } else {
                 if(authorsRow[0].Author_Name === req.body.author_name)
                 {
                     author_number = authorsRow[0].Author_Number;
-                    console.log('Author read.');
                 }
             }
             //Sending a SQL query to the database and making a PROMISE
@@ -175,15 +171,11 @@ try{
                 }
                 //Sending a SQL query to the database
                 connection.query(ibookauthor, book_author, (err, result) => {
-                    if (result){
-                        console.log('Book_Author added to database');
-                    }
                     if (err){
                         res.status(400).json({message:'Book_Author was not inserted.'});
+                        connection.release();
                     }                    
                 });
-            } else{
-                console.log('Book_Author found.');
             }
             //Sending a SQL query to the database and making a PROMISE
             return connection.query(fbooksubject, [book_number, subject_number]);
@@ -200,13 +192,9 @@ try{
                 connection.query(ibooksubject, book_subject, (err, result) => {
                     if (err){
                         res.status(400).json({message:'Book_Subject was not inserted.'});
-                    }
-                    if (result){
-                        console.log('Book_Subject added to database.');
+                        connection.release();
                     }
                 });           
-            } else{
-                console.log('Book_Subject found.');
             }
             return connection.query(fStudent, req.keystudentNumber);
         })
@@ -231,9 +219,11 @@ try{
         .then(function(nothing){
             //Responding to the request that the book was added to the database.
             res.status(200).json({message:'The Book and all related data was added to the database.'});
+            connection.release();
         })
         .catch(function(err) {
             res.status(404).json({error:'Error occured with the create book sql statements.'});
+            connection.release();
         });
     });
 }
@@ -258,11 +248,12 @@ try{
             //Sending the SQL query to the database
             connection.query(viewBookSQL, (err, result) => {
                 if (result){
-                    console.log('Data being collected.');
                     res.status(200).json(result);
+                    connection.release();
                 }
                 if (err){
                     res.status(400).json({message:'Book data could not be found.'});
+                    connection.release();
                 }   
             });
         });
@@ -289,11 +280,12 @@ try{
             //Sending the SQL query to the database
             connection.query(viewBookSQL, (err, result) => {
                 if (result){
-                    console.log('Data being collected.');
                     res.status(200).json(result);
+                    connection.release();
                 }
                 if (err){
                     res.status(400).json({message:'Book data could not be found.'});
+                    connection.release();
                 }   
             });
         });
@@ -323,11 +315,12 @@ try{
             //Sending the SQL query to the database
             connection.query(viewBookSQL, studentNumber, (err, result) => {
                 if (result){
-                    console.log('Data being collected.');
                     res.status(200).json(result);
+                    connection.release();
                 }
                 if (err){
                     res.status(400).json({message:'Data could not be found for personal books placed.'});
+                    connection.release();
                 }                
             });
         });
@@ -366,44 +359,44 @@ try{
             //If function to test if the data you want to delete exists in the database
             if(bookRow.length === 0){
                 res.status(400).json({error:'The Book you want to delete does not exist.'});
+                connection.release();
             } else {
                 //If statement to test if the book you want to delete belongs to you.
                 if(bookRow[0].STUDENT_Student_Number === req.keystudentNumber){
                     //Sending a SQL query to delete the book_author record
                     connection.query(dBookauthor, bookRow[0].Book_Number, (err, result) => {
-                        if (result){
-                            console.log('Book_Author was deleted.');
-                        }
                         if (err){
                             res.status(400).json({message:'Book_Author could not be deleted.'});
+                            connection.release();
                         }
                     });
                     //Sending a SQL query to delete the book_subject record
                     connection.query(dBooksubject, bookRow[0].Book_Number, (err, result) => {
-                        if (result){
-                            console.log('Book_Subject was deleted.');
-                        }
                         if (err){
                             res.status(400).json({message:'Book_Subject could not be deleted.'});
+                            connection.release();
                         }                    
                     });
                     //Sending a SQL query to delete the book
                     connection.query(dBook, bookRow[0].Book_Number, (err, result) => {
                         if (result){
-                            console.log('Book was deleted.');
                             res.status(200).json({message:'Book was deleted.'});
+                            connection.release();
                         }
                         if (err){
                             res.status(400).json({message:'Book could not be deleted.'});
+                            connection.release();
                         }                    
                     });
                 } else {
                     res.status(400).json({message:'The book you want to delete does not belong to you.'});
+                    connection.release();
                 }
             }
         })
         .catch(function(err) {
             res.status(404).json({error:'Error occured with the delete book sql statements.'});
+            connection.release();
         });
 
     });
@@ -442,33 +435,31 @@ try{
             if(bookRow.length === 0)
             {
                 res.status(400).json({error:'The Book you want to delete does not exist.'});
+                connection.release();
             } else {
                 //Sending a SQL query to delete the book_author record
                 connection.query(dBookauthor, bookRow[0].Book_Number, (err, result) => {
-                    if (result){
-                        console.log('Book_Author was deleted.');
-                    }
                     if (err){
                         res.status(400).json({message:'Book_Author could not be deleted.'});
+                        connection.release();
                     }
                 });
                 //Sending a SQL query to delete the book_subject record
                 connection.query(dBooksubject, bookRow[0].Book_Number, (err, result) => {
-                    if (result){
-                        console.log('Book_Subject was deleted.');
-                    }
                     if (err){
                         res.status(400).json({message:'Book_Subject could not be deleted.'});
+                        connection.release();
                     }                    
                 });
                 //Sending a SQL query to delete the book
                 connection.query(dBook, bookRow[0].Book_Number, (err, result) => {
                     if (result){
-                        console.log('Book was deleted.');
                         res.status(200).json({message:'Book was deleted.'});
+                        connection.release();
                     }
                     if (err){
                         res.status(400).json({message:'Book could not be deleted.'});
+                        connection.release();
                     }                    
                 });
             }
@@ -490,7 +481,7 @@ catch(error)
 try{
     router.post('/type', checkAuth, jsonParser, (req, res, next) => {
         //Creating SQL variables for the Filter book types
-        var viewBookSQL = 'SELECT Book_Name, Book_Edition, Author_Name, (Subject_Code), Book_Price, Book_ISBN_10_Number, Book_ISBN_13_Number, Book_Type, Student_Number, First_Name, Contact_Number, Email_Address FROM book_detail where Book_Type = ?'
+        var viewBookSQL = 'SELECT Book_Name, Book_Edition, Author_Name, (Subject_Code), Book_Price, Book_ISBN_10_Number, Book_ISBN_13_Number, Book_Type, Date_Placed, Student_Number, First_Name, Contact_Number, Email_Address FROM book_detail where Book_Type = ?'
 
         //Creating variables for the data that was requested
         var bookType = req.body.book_type;
@@ -500,11 +491,12 @@ try{
             //Sending the SQL query to the database
             connection.query(viewBookSQL, bookType, (err, result) => {
                 if (result){
-                    console.log('Book data being collected.');
                     res.status(200).json(result);
+                    connection.release();
                 }
                 if (err){
                     res.status(400).json({message:'Data could not be found for ' + bookType + 's.'});
+                    connection.release();
                 }                
             });
         });
@@ -525,7 +517,7 @@ catch(error)
 try{
     router.post('/price', checkAuth, jsonParser, (req, res, next) => {
         //Creating SQL variables for the Filter book types
-        var viewBookSQL = 'SELECT Book_Name, Book_Edition, Author_Name, Subject_Code, Book_Price, Book_ISBN_10_Number, Book_ISBN_13_Number, Book_Type, Student_Number, First_Name, Contact_Number, Email_Address FROM book_detail where Book_Price <= ?'
+        var viewBookSQL = 'SELECT Book_Name, Book_Edition, Author_Name, Subject_Code, Book_Price, Book_ISBN_10_Number, Book_ISBN_13_Number, Book_Type, Student_Number, Date_Placed, First_Name, Contact_Number, Email_Address FROM book_detail where Book_Price <= ?'
 
         //Creating variables for the data that was requested
         var bookPrice = req.body.book_price;
@@ -535,11 +527,12 @@ try{
             //Sending the SQL query to the database
             connection.query(viewBookSQL, bookPrice, (err, result) => {
                 if (result){
-                    console.log('Book data being collected.');
                     res.status(200).json(result);
+                    connection.release();
                 }
                 if (err){
                     res.status(400).json({message:'Data could not be found.'});
+                    connection.release();
                 }                
             });
         });
@@ -560,7 +553,7 @@ catch(error)
 try{
     router.post('/subject', checkAuth, jsonParser, (req, res, next) => {
         //Creating SQL variables for the Filter book types
-        var viewBookSQL = 'SELECT Book_Name, Book_Edition, Author_Name, Subject_Code, Book_Price, Book_ISBN_10_Number, Book_ISBN_13_Number, Book_Type, Student_Number, First_Name, Contact_Number, Email_Address FROM book_detail where Subject_Code = ?;'
+        var viewBookSQL = 'SELECT Book_Name, Book_Edition, Author_Name, Subject_Code, Book_Price, Book_ISBN_10_Number, Book_ISBN_13_Number, Book_Type, Date_Placed, Student_Number, First_Name, Contact_Number, Email_Address FROM book_detail where Subject_Code = ?;'
 
         //Creating variables for the data that was requested
         var bookSubject = req.body.subject_code;
@@ -570,11 +563,12 @@ try{
             //Sending the SQL query to the database
             connection.query(viewBookSQL, bookSubject, (err, result) => {
                 if (result){
-                    console.log('Book data being collected.');
                     res.status(200).json(result);
+                    connection.release();
                 }
                 if (err){
                     res.status(400).json({message:'Data could not be found.'});
+                    connection.release();
                 }                
             });
         });
@@ -596,7 +590,7 @@ catch(error)
 try{
     router.post('/subject/price/type', checkAuth, jsonParser, (req, res, next) => {
         //Creating SQL variables for the Filter book types
-        var viewBookSQL = 'SELECT Book_Name, Book_Edition, Author_Name, Subject_Code, Book_Price, Book_ISBN_10_Number, Book_ISBN_13_Number, Book_Type, Student_Number, First_Name, Contact_Number, Email_Address FROM book_detail where Subject_Code = ? and Book_Type = ? and Book_Price <= ?;'
+        var viewBookSQL = 'SELECT Book_Name, Book_Edition, Author_Name, Subject_Code, Book_Price, Book_ISBN_10_Number, Book_ISBN_13_Number, Book_Type, Date_Placed, Student_Number, First_Name, Contact_Number, Email_Address FROM book_detail where Subject_Code = ? and Book_Type = ? and Book_Price <= ?;'
 
         //Creating variables for the data that was requested
         var bookSubject = req.body.subject_code;
@@ -608,11 +602,12 @@ try{
             //Sending the SQL query to the database
             connection.query(viewBookSQL, [bookSubject, booType, bookPrice], (err, result) => {
                 if (result){
-                    console.log('Book data being collected.');
                     res.status(200).json(result);
+                    connection.release();
                 }
                 if (err){
                     res.status(400).json({message:'Data could not be found.'});
+                    connection.release();
                 }                
             });
         });

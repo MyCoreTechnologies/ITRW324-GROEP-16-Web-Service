@@ -80,12 +80,15 @@ try{
                         }
                         if(ers) {
                             res.status(400).json({message:'Student not found.'});
+                            connection.release();
                         }
                     })   
                     res.status(200).json({message:'Student was reported added'});
+                    connection.release();
                 }
                 if (err){
                     res.status(400).json({message:'Student could not be reported.'});
+                    connection.release();
                 }            
             });
         });
@@ -112,11 +115,12 @@ try{
             //Sending the SQL query to the database
             connection.query(rOffence, (err, result) => {
                 if (result){
-                    console.log('Data is being collected.')
                     res.status(200).json(result);
+                    connection.release();
                 }
                 if (err){
                     res.status(400).json({message:'Could not read the offence data from the database'});
+                    connection.release();
                 }
             });
         });
@@ -150,15 +154,17 @@ try{
             if(offenceRow.length === 0)
             {
                 res.status(400).json({message:'Offence does not exist in databse'});
+                connection.release();
             } else {
                 //Sending the update query to the databse with the old and new values
                 connection.query(uStudentOffence, [req.body.type_of_offence, req.body.offence_number], (err, result) => {
                     if(result){
-                        console.log('Updating Student_Offence table.')
                         res.status(200).json({message:'Student_Offence was updated'});
+                        connection.release();
                     }
                     if (err){
-                        res.status(400).json({message:'Student_Offence could not be updated'});;
+                        res.status(400).json({message:'Student_Offence could not be updated'});
+                        connection.release();
                     }
                 })
             }
@@ -192,15 +198,17 @@ try{
             if(offenceRow.length === 0)
             {
                 res.status(400).json({message:'Offence does not exist in databse'});
+                connection.release();
             } else {
                 //Sending the update query to the databse with the old and new values
                 connection.query(dStudentOffence, req.body.offence_number, (err, result) => {
                     if(result){
-                        console.log('Deleteing Student Offence .')
                         res.status(200).json({message:'Student_Offence was deleted'});
+                        connection.release();
                     }
                     if (err){
                         res.status(400).json({message:'Student_Offence could not be deleted'});;
+                        connection.release();
                     }
                 })
             }
@@ -225,11 +233,12 @@ try{
             //Sending the SQL query to the database
             connection.query(rOffence, req.body.student_number, (err, result) => {
                 if (result){
-                    console.log('Data is being collected.')
                     res.status(200).json(result);
+                    connection.release();
                 }
                 if (err){
                     res.status(400).json({message:'Could not read the offence data from the database'});
+                    connection.release();
                 }
             });
         });

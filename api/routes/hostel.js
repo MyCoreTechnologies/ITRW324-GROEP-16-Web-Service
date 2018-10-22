@@ -43,9 +43,11 @@ try{
             connection.query(iHostel, hostel, (err, result) => {
                 if (result){
                     res.status(200).json({message:'Hostel added'});
+                    connection.release();
                 }
                 if (err){
                     res.status(400).json({message:'Hostel could not be added.'});
+                    connection.release();
                 }            
             });
         });
@@ -72,11 +74,12 @@ try{
             //Sending SQL query to the database
             connection.query(rHostel, (err, result) => {
                 if (result){
-                    console.log('Data is being collected.');
                     res.status(200).json(result);
+                    connection.release();
                 }
                 if (err){
                     res.status(400).json({message:'Could not retrieve hostel data.'});
+                    connection.release();
                 }            
             });
         });
@@ -112,15 +115,17 @@ try{
             if(hostelRow.length === 0)
             {
                 res.status(400).json({message:'Hostel does not exist in databse'});
+                connection.release();
             } else {
                 //Sending the update query to the databse with the old and new values
                 connection.query(uHostel, [req.body.n_hostel_name, req.body.o_hostel_name], (err, result) => {
                     if(result){
-                        console.log('Updating hostel table.')
                         res.status(200).json({message:'Hostel was updated'});
+                        connection.release();
                     }
                     if (err){
-                        res.status(400).json({message:'Hostel could not be updated'});;
+                        res.status(400).json({message:'Hostel could not be updated'});
+                        connection.release();
                     }
                 })
             }
